@@ -6,9 +6,6 @@ from src import utils
 logger = logging_conf.config("plot_temperature")
 
 
-
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Polling data from the charger and write to database"
