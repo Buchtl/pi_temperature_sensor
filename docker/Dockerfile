@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-ENV LOG_DIR=/var/log/pi_temperaturea_sensor
+ENV LOG_DIR=/var/log/pi_temperature_sensor
 RUN mkdir -p $LOG_DIR &&\
   chmod 777 $LOG_DIR &&\
   mkdir -p /app &&\
