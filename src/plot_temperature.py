@@ -1,9 +1,24 @@
 import argparse
 import pathlib
+import time
+import threading
+
 from src import logging_conf
 from src import utils
+from src import exceptions
+
 
 logger = logging_conf.config("plot_temperature")
+
+
+def temp_loop(file_path: pathlib.Path, interval: int, stop_event: threading.Event):
+    while not stop_event.is_set():
+        try:
+            temp = utils.parse_temp_in_cesius(file_path)
+            logger.info(f"{temp:.3f} °C")
+        except exceptions.CRCError as e:
+            logger.error("Error reading temperature:", e)
+        stop_event.wait(interval)
 
 
 if __name__ == "__main__":
@@ -21,18 +36,33 @@ if __name__ == "__main__":
         help="Name of the sensor file to search for",
     )
     parser.add_argument(
-        "--period",
+        "--interval",
         default=60,
-        help="Period for polling in seconds",
+        help="Interval for polling in seconds",
     )
     args = parser.parse_args()
 
-    root_dir = pathlib.Path(args.root_dir)
-    filename = args.sensor_filename
-    period = args.period
+    root_dir: pathlib.Path = pathlib.Path(args.root_dir)
+    filename: str = args.sensor_filename
+    interval: int = int(args.interval)
 
-    logger.info(f"root-dir: {root_dir}, filename: {filename}, period: {period}")
+    logger.info(f"root-dir: {root_dir}, filename: {filename}, interval: {interval}")
 
-    logger.info(f"Searching for {filename} in {root_dir}")
     sensor_file_path = utils.search_file(root_dir, filename)[0]
     logger.info(f"sensor file path is: {sensor_file_path}")
+
+    stop_event = threading.Event()
+    thread = threading.Thread(
+        target=temp_loop, args=(sensor_file_path, interval, stop_event), daemon=True
+    )
+    thread.start()
+
+    try:
+        # Main thread can do other things here, or just sleep
+        while thread.is_alive():
+            time.sleep(1)
+    except KeyboardInterrupt:
+        logger.info("\nStopping temperature monitor...")
+        stop_event.set()  # signal the thread to exit
+        thread.join()  # wait for thread to finish
+    logger.info("Exited gracefully.")
