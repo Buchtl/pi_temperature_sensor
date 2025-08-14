@@ -1,12 +1,12 @@
 import argparse
 import pathlib
 from src import logging_conf
+from src import utils
 
 logger = logging_conf.config("plot_temperature")
 
 
-def search_data_file(root_dir: pathlib.Path, filename: str):
-    return list(root_dir.rglob(filename))
+
 
 
 if __name__ == "__main__":
@@ -29,5 +29,5 @@ if __name__ == "__main__":
     filename = args.sensor_filename
 
     logger.info(f"Searching for {filename} in {root_dir}")
-    sensor_file_path = search_data_file(root_dir, filename)[0]
+    sensor_file_path = utils.search_file(root_dir, filename)[0]
     logger.info(f"sensor file path is: {sensor_file_path}")
