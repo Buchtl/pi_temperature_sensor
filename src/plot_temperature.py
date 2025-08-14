@@ -1,6 +1,5 @@
 import argparse
 import pathlib
-import os
 from src import logging_conf
 
 logger = logging_conf.config("plot_temperature")
@@ -9,11 +8,24 @@ logger = logging_conf.config("plot_temperature")
 
 
 def search_data_file(root_dir: pathlib.Path, filename: str):
-    results = []
-    for dirpath, dirnames, filenames in os.walk(root_dir, followlinks=True):
-        if filename in filenames:
-            results.append(os.path.join(dirpath, filename))
-    return results
+    return list(root_dir.rglob(filename))
+#def search_data_file(root_dir: pathlib.Path, filename: str):
+#    results = []
+#    for dirpath, dirnames, filenames in os.walk(root_dir, followlinks=True):
+#        if filename in filenames:
+#            results.append(os.path.join(dirpath, filename))
+#    return results
+
+root = "/sys/bus/w1/devices"
+target = "filename"
+results = []
+
+for dirpath, dirnames, filenames in os.walk(root, followlinks=True):
+    if target in filenames:
+        results.append(os.path.join(dirpath, target))
+
+print(results)
+
 
 
 if __name__ == "__main__":
