@@ -2,6 +2,7 @@ import argparse
 import pathlib
 import time
 import threading
+import sys
 
 from src import logging_conf
 from src import utils
@@ -48,8 +49,14 @@ if __name__ == "__main__":
 
     logger.info(f"root-dir: {root_dir}, filename: {filename}, interval: {interval}")
 
-    sensor_file_path = utils.search_file(root_dir, filename)[0]
-    logger.info(f"sensor file path is: {sensor_file_path}")
+    try:
+        sensor_file_path = utils.search_file(root_dir, filename)[0]
+        logger.info(f"sensor file path is: {sensor_file_path}")
+    except IndexError:
+        logger.error(
+            f"No sensor found in {root_dir} with filename {filename} -> terminating"
+        )
+        sys.exit(1)
 
     stop_event = threading.Event()
     thread = threading.Thread(
