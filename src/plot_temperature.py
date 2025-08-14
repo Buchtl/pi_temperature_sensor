@@ -1,9 +1,11 @@
 import argparse
 import pathlib
-import os
-import logging
+from src import logging_conf
+
+logger = logging_conf.config("plot_temperature")
 
 # /sys/bus/w1/devices/10-000803cd476f
+
 
 def search_data_file(root_dir: pathlib.Path, filename: str):
     return list(root_dir.rglob(filename))
@@ -13,11 +15,22 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Polling data from the charger and write to database"
     )
-    parser.add_argument("--todo", default="localhost", help="URL with of the database")
+    parser.add_argument(
+        "--root-dir",
+        default="/sys/bus/w1/devices",
+        help="Dir where to search for sensor",
+    )
+    parser.add_argument(
+        "--sensor-filename",
+        default="w1_slave",
+        help="Name of the sensor file to search for",
+    )
     args = parser.parse_args()
 
-    root_dir = pathlib.Path("./test_device")
-    filename = "w1_slave"
-    print(f"File is {search_data_file(root_dir, filename)[0]}")
+    root_dir = pathlib.Path(args.root_dir)
+    filename = args.sensor_filename
 
+    logger.info(f"Searching for {filename} in {root_dir}")
+    sensor_file_path = search_data_file(root_dir, filename)[0]
 
+    logger.info(f"sensor file path is: {sensor_file_path}")
