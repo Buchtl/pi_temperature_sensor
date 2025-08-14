@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  charger-base:
+  pi_temperature_sensor:
     image: obazda/pi_temperature_sensor:${BASE_VERSION:-0.1}-${BASE_ARCH:-AMD64}
     build:
       context: ..
