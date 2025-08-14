@@ -17,8 +17,8 @@ WORKDIR /app
 USER nobody
 
 ENV PYTHONUNBUFFERED=1 \
-    ROOT_DIR="pi4b" \
-    SENSOR_FILENAME="5432" \
+    ROOT_DIR="/sys/device/" \
+    SENSOR_FILENAME="w1_slave" \
     INTERVAL="1"
 
 CMD ["sh", "-c", "python3 -m src.plot_temperature --root-dir \"$ROOT_DIR\" --sensor-filename \"$SENSOR_FILENAME\" --interval \"$INTERVAL\""]
