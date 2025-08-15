@@ -7,4 +7,4 @@ sudo systemctl start plot_temperature.service
 
 # check
 sudo systemctl status plot_temperature.service
-sudo journalctl -u plot_temperature.service -f
+#sudo journalctl -u plot_temperature.service -f
