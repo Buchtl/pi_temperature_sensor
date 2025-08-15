@@ -7,16 +7,27 @@ import sys
 from src import logging_conf
 from src import utils
 from src import exceptions
+from src import api_calls
+from src.dto.temperature_dto import TemperatureDto
 
 
 logger = logging_conf.config("plot_temperature")
 
 
-def temp_loop(file_path: pathlib.Path, interval: int, stop_event: threading.Event):
+def temp_loop(
+    file_path: pathlib.Path,
+    interval: int,
+    url: str,
+    name: str,
+    stop_event: threading.Event,
+):
     while not stop_event.is_set():
         try:
             temp = utils.parse_temp_in_cesius(file_path)
-            logger.info(f"{temp:.3f} °C")
+            logger.debug(f"{temp:.3f} °C")
+            data = TemperatureDto(device=name, value=temp)
+            api_calls.send_temperature(data=data, url=url)
+
         except exceptions.CRCError as e:
             logger.error("Error reading temperature:", e)
         stop_event.wait(interval)
@@ -41,11 +52,23 @@ if __name__ == "__main__":
         default=60,
         help="Interval for polling in seconds",
     )
+    parser.add_argument(
+        "--url",
+        default="http://localhost:8080/temp",
+        help="URL for api call",
+    )
+    parser.add_argument(
+        "--name",
+        default="device_1",
+        help="Name of the device -> as tag for the data",
+    )
     args = parser.parse_args()
 
     root_dir: pathlib.Path = pathlib.Path(args.root_dir)
     filename: str = args.sensor_filename
     interval: int = int(args.interval)
+    url: str = args.url
+    device_name: str = args.name
 
     logger.info(f"root-dir: {root_dir}, filename: {filename}, interval: {interval}")
 
@@ -60,7 +83,9 @@ if __name__ == "__main__":
 
     stop_event = threading.Event()
     thread = threading.Thread(
-        target=temp_loop, args=(sensor_file_path, interval, stop_event), daemon=True
+        target=temp_loop,
+        args=(sensor_file_path, interval, url, device_name, stop_event),
+        daemon=True,
     )
     thread.start()
 
