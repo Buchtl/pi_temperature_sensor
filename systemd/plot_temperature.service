@@ -7,7 +7,7 @@ User=pi
 WorkingDirectory=/home/pi/git/pi_temperature_sensor
 Environment="PATH=/home/pi/git/pi_temperature_sensor/venv/bin:$PATH"
 ExecStart=/home/pi/venvs/pi_temp_sensor/bin/python3 -m src.plot_temperature \
-  --root-dir /home/pi/git/pi_temperature_sensor/test_device \
+  --root-dir /sys/devices \
   --sensor-filename w1_slave \
   --interval 1 \
   --url http://pi4b:8090/temp \
