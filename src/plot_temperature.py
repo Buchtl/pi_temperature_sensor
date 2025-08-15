@@ -25,7 +25,7 @@ def temp_loop(
         try:
             temp = utils.parse_temp_in_cesius(file_path)
             logger.debug(f"{temp:.3f} °C")
-            data = TemperatureDto(device=name, value=temp)
+            data = TemperatureDto(device=name, value=temp, timestamp=utils.timestamp())
             api_calls.send_temperature(data=data, url=url)
 
         except exceptions.CRCError as e:

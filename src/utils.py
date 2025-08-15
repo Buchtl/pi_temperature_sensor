@@ -1,4 +1,6 @@
 import pathlib
+from datetime import datetime, timezone
+
 from src import exceptions
 
 
@@ -16,3 +18,7 @@ def parse_temp_in_cesius(file: pathlib.Path):
         return temperature_c
     else:
         raise exceptions.CRCError("CRC check failed for 1-Wire sensor data.")
+
+
+def timestamp():
+    return datetime.now(timezone.utc).isoformat()
