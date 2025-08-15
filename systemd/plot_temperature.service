@@ -6,10 +6,10 @@ After=network.target
 User=pi
 WorkingDirectory=/home/pi/git/pi_temperature_sensor
 Environment="PATH=/home/pi/git/pi_temperature_sensor/venv/bin:$PATH"
-ExecStart=/home/pi/venvs/pi_temp_sensor/bin/python3 -m src.plot_temperature \
+ExecStart=/home/pi/git/pi_temperature_sensor/venv/bin/python3 -m src.plot_temperature \
   --root-dir /sys/devices \
   --sensor-filename w1_slave \
-  --interval 1 \
+  --interval 60 \
   --url http://pi4b:8090/temp \
   --name kammerl
 Restart=always
